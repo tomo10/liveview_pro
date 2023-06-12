@@ -1,0 +1,11 @@
+version: "3"
+services:
+  postgres:
+    build: ./postgres-dev
+    container_name: postgres_liveview
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_LIST: liveview_dev
