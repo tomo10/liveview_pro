@@ -8,6 +8,6 @@ defmodule LiveViewStudio.Sales do
   end
 
   def satisfaction do
-    Enum.random(95..100)
+    Enum.random(90..100)
   end
 end
