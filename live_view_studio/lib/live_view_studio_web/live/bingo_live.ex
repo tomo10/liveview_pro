@@ -46,7 +46,6 @@ defmodule LiveViewStudioWeb.BingoLive do
     |> Enum.flat_map(fn {letter, numbers} ->
       Enum.map(numbers, &"#{letter} #{&1}")
     end)
-    |> dbg()
     |> Enum.shuffle()
   end
 
