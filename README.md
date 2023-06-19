@@ -1,25 +1,18 @@
-# Phoenix LiveView Course (2nd Edition)
+# LiveViewStudio
 
-This directory contains the source code for the [Phoenix LiveView](https://pragmaticstudio.com/phoenix-liveview) video course.
+To start your Phoenix server:
 
-## Copyright
+  * Run `mix setup` to install and setup dependencies
+  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-This software is Copyright (c) 2023 The Pragmatic Studio, unless otherwise marked. Software from other projects are subject to the license(s) appropriate to those projects. You are responsible for complying with licenses for software you use.
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-## License
+Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-If you have purchased this video course, we grant you permission to use this software and associated documentation files (the "Software") for your personal educational purposes only, including the rights to use and modify the Software subject to the following conditions:
+## Learn more
 
-- You may not use this Software to create training material,
-  courses, books, articles, and the like.
-
-- You may not sell, distribute, or publish this Software.
-
-Please contact us if you are in doubt.
-
-## Warranty
-
-This Software is provided for educational purposes only, and comes with absolutely no warranty. We make no guarantees that this code is fit for any purpose.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  * Official website: <https://www.phoenixframework.org/>
+  * Guides: <https://hexdocs.pm/phoenix/overview.html>
+  * Docs: <https://hexdocs.pm/phoenix>
+  * Forum: <https://elixirforum.com/c/phoenix-forum>
+  * Source: <https://github.com/phoenixframework/phoenix>
