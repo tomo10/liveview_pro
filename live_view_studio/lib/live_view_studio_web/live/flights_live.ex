@@ -43,7 +43,7 @@ defmodule LiveViewStudioWeb.FlightsLive do
         </option>
       </datalist>
 
-      <div :if={@loading} class="loader">Loading...</div>
+      <.loading_indicator visible={@loading} />
 
       <div class="flights">
         <ul>
@@ -71,7 +71,6 @@ defmodule LiveViewStudioWeb.FlightsLive do
     """
   end
 
-  @spec handle_event(<<_::48, _::_*8>>, map, any) :: {:noreply, any}
   def handle_event("suggest", %{"airport" => prefix}, socket) do
     matches = Airports.suggest(prefix)
     {:noreply, assign(socket, matches: matches)}
