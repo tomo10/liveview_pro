@@ -11,9 +11,16 @@ defmodule LiveViewStudioWeb.DonationsLive do
     # sort order has better way of validating params
     sort_order = valid_sort_order(params)
 
+    page = (params["page"] || "1") |> String.to_integer()
+    per_page = (params["per_page"] || "5") |> String.to_integer()
+
+    IO.inspect(per_page, label: "I AM BEING INSPECTED")
+
     options = %{
       sort_by: sort_by,
-      sort_order: sort_order
+      sort_order: sort_order,
+      page: page,
+      per_page: per_page
     }
 
     donations = Donations.list_donations(options)
@@ -32,14 +39,31 @@ defmodule LiveViewStudioWeb.DonationsLive do
   slot :inner_block, required: true
 
   def sort_link(assigns) do
+    params = %{
+      assigns.options
+      | sort_by: assigns.sort_by,
+        sort_order: next_sort_order(assigns.options.sort_order)
+    }
+
+    assigns = assign(assigns, params: params)
+
     ~H"""
-    <.link patch={
-      ~p"/donations?#{%{sort_by: @sort_by, sort_order: next_sort_order(@options.sort_order)}}"
-    }>
+    <.link patch={~p"/donations?#{@params}"}>
       <%= render_slot(@inner_block) %>
       <%= sort_indicator(@sort_by, @options) %>
     </.link>
     """
+  end
+
+  def handle_event("select-per-page", %{"per-page" => per_page}, socket) do
+    params = %{socket.assigns.options | per_page: per_page}
+
+    # whenever you want to change the url, you need to use push_patch
+    # it aslo invokes handle_params
+    # it is doing same job as patch on client side but from server side
+    socket = push_patch(socket, to: ~p"/donations?#{params}")
+
+    {:noreply, socket}
   end
 
   def next_sort_order(sort_order) do
