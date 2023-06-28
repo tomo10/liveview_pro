@@ -11,10 +11,8 @@ defmodule LiveViewStudioWeb.DonationsLive do
     # sort order has better way of validating params
     sort_order = valid_sort_order(params)
 
-    page = (params["page"] || "1") |> String.to_integer()
-    per_page = (params["per_page"] || "5") |> String.to_integer()
-
-    IO.inspect(per_page, label: "I AM BEING INSPECTED")
+    page = param_to_integer(params["page"], 1)
+    per_page = param_to_integer(params["per_page"], 10)
 
     options = %{
       sort_by: sort_by,
@@ -89,4 +87,16 @@ defmodule LiveViewStudioWeb.DonationsLive do
   end
 
   defp sort_indicator(_column, _options), do: ""
+
+  defp param_to_integer(nil, default), do: default
+
+  defp param_to_integer(param, default) do
+    case Integer.parse(param) do
+      {int, _} ->
+        int
+
+      :error ->
+        default
+    end
+  end
 end
