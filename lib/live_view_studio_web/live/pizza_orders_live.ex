@@ -13,9 +13,14 @@ defmodule LiveViewStudioWeb.PizzaOrdersLive do
     sort_by = (params["sort_by"] || "id") |> String.to_existing_atom()
     sort_order = DonationsLive.valid_sort_order(params)
 
+    page = param_to_int(params["page"], 1)
+    per_page = param_to_int(params["per_page"], 10)
+
     options = %{
       sort_by: sort_by,
-      sort_order: sort_order
+      sort_order: sort_order,
+      page: page,
+      per_page: per_page
     }
 
     pizza_orders = PizzaOrders.list_pizza_orders(options)
@@ -36,10 +41,26 @@ defmodule LiveViewStudioWeb.PizzaOrdersLive do
   def sort_link(assigns) do
     ~H"""
     <.link patch={
-      ~p"/pizza-orders?#{%{sort_by: assigns.sort_by, sort_order: DonationsLive.next_sort_order(assigns.options.sort_order)}}"
+      ~p"/pizza-orders?#{%{sort_by: assigns.sort_by, sort_order: next_sort_order(assigns.options.sort_order)}}"
     }>
       <%= render_slot(@inner_block) %>
     </.link>
     """
+  end
+
+  def next_sort_order(sort_order) do
+    case sort_order do
+      :asc -> :desc
+      :desc -> :asc
+    end
+  end
+
+  defp param_to_int(nil, default), do: default
+
+  defp param_to_int(param, default) do
+    case Integer.parse(param) do
+      {int, _} -> int
+      :error -> default
+    end
   end
 end
