@@ -59,7 +59,10 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     case Volunteers.create_volunteer(volunteer_params) do
       {:ok, volunteer} ->
         # add the newly created volunteer to the list of volunteers
-        socket = update(socket, :volunteers, fn volunteers -> [volunteer | volunteers] end)
+        socket =
+          update(socket, :volunteers, fn volunteers -> [volunteer | volunteers] end)
+          |> put_flash(:info, "Volunteer checked in successfully!")
+
         # create a new changeset for the form so its empty
         changeset = Volunteers.change_volunteer(%Volunteer{})
         # convert the changeset to a form and assign it to the socket
