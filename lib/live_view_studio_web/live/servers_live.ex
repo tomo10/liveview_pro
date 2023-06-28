@@ -27,29 +27,27 @@ defmodule LiveViewStudioWeb.ServersLive do
 
   # need a handle params for if there is no id passed to url
   def handle_params(_, _, socket) do
-    {:noreply, assign(socket, selected_server: hd(socket.assigns.servers))}
+    socket =
+      if socket.assigns.live_action == :new do
+        changeset = Servers.change_server(%Server{})
+        assign(socket, selected_server: nil, form: to_form(changeset))
+      else
+        assign(socket, selected_server: hd(socket.assigns.servers))
+      end
+
+    {:noreply, socket}
   end
 
   def render(assigns) do
     ~H"""
     <h1>Servers</h1>
-    <.form for={@form} phx-submit="save">
-      <.input field={@form[:name]} placeholder="Name" autocomplete="off" />
-      <.input
-        field={@form[:framework]}
-        placeholder="Framework"
-        autocomplete="off"
-      />
-      <.input
-        field={@form[:size]}
-        placeholder="Size (MB)"
-        autocomplete="off"
-      />
-      <.button phx-disable-with="Saving...">Save</.button>
-    </.form>
+
     <div id="servers">
       <div class="sidebar">
         <div class="nav">
+          <.link patch={~p"/servers/new"} class="add">
+            + Add New Server
+          </.link>
           <.link
             :for={server <- @servers}
             patch={~p"/servers?#{[id: server]}"}
@@ -68,7 +66,31 @@ defmodule LiveViewStudioWeb.ServersLive do
       </div>
       <div class="main">
         <div class="wrapper">
-          <.server server={@selected_server} />
+          <%= if @live_action == :new do %>
+            <.form for={@form} phx-submit="save">
+              <.input
+                field={@form[:name]}
+                placeholder="Name"
+                autocomplete="off"
+              />
+              <.input
+                field={@form[:framework]}
+                placeholder="Framework"
+                autocomplete="off"
+              />
+              <.input
+                field={@form[:size]}
+                placeholder="Size (MB)"
+                autocomplete="off"
+              />
+              <.button phx-disable-with="Saving...">Save</.button>
+              <.link patch={~p"/servers"} class="cancel">
+                Cancel
+              </.link>
+            </.form>
+          <% else %>
+            <.server server={@selected_server} />
+          <% end %>
           <div class="links">
             <.link navigate={~p"/flights"}>
               Adjust Lights
@@ -117,7 +139,10 @@ defmodule LiveViewStudioWeb.ServersLive do
   def handle_event("save", %{"server" => server_params}, socket) do
     case Servers.create_server(server_params) do
       {:ok, server} ->
-        socket = update(socket, :servers, fn servers -> [server | servers] end)
+        socket =
+          update(socket, :servers, fn servers -> [server | servers] end)
+          |> push_patch(to: ~p"/servers?#{server_params}")
+
         {:noreply, assign(socket, :form, to_form(Servers.change_server(%Server{})))}
 
       {:error, changeset} ->
