@@ -11,10 +11,9 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     form = to_form(cs)
 
     socket =
-      assign(socket,
-        volunteers: volunteers,
-        form: form
-      )
+      socket
+      |> stream(:volunteers, volunteers)
+      |> assign(:form, form)
 
     {:ok, socket}
   end
@@ -33,7 +32,7 @@ defmodule LiveViewStudioWeb.VolunteersLive do
         <.input
           field={@form[:phone]}
           type="tel"
-          placeholder="Name"
+          placeholder="Phone"
           autocomplete="off"
           phx-debounce="blur"
         />
@@ -41,20 +40,25 @@ defmodule LiveViewStudioWeb.VolunteersLive do
       </.form>
       <.flash_group flash={@flash} />
 
-      <div
-        :for={volunteer <- @volunteers}
-        class={"volunteer #{if volunteer.checked_out, do: "out"}"}
-      >
-        <div class="name">
-          <%= volunteer.name %>
-        </div>
-        <div class="phone">
-          <%= volunteer.phone %>
-        </div>
-        <div class="status">
-          <button>
-            <%= if volunteer.checked_out, do: "Check In", else: "Check Out" %>
-          </button>
+      <div id="volunteers" phx-update="stream">
+        <div
+          :for={{volunteer_id, volunteer} <- @streams.volunteers}
+          class={"volunteer #{if volunteer.checked_out, do: "out"}"}
+          id={volunteer_id}
+        >
+          <div class="name">
+            <%= volunteer.name %>
+          </div>
+          <div class="phone">
+            <%= volunteer.phone %>
+          </div>
+          <div class="status">
+            <button>
+              <%= if volunteer.checked_out,
+                do: "Check In",
+                else: "Check Out" %>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -65,9 +69,7 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     case Volunteers.create_volunteer(volunteer_params) do
       {:ok, volunteer} ->
         # add the newly created volunteer to the list of volunteers
-        socket =
-          update(socket, :volunteers, fn volunteers -> [volunteer | volunteers] end)
-          |> put_flash(:info, "Volunteer checked in successfully!")
+        socket = stream_insert(socket, :volunteers, volunteer, at: 0)
 
         # create a new changeset for the form so its empty
         changeset = Volunteers.change_volunteer(%Volunteer{})
