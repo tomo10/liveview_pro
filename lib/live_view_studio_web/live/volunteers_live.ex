@@ -23,7 +23,7 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     ~H"""
     <h1>Volunteer Check-In</h1>
     <div id="volunteer-checkin">
-      <.form for={@form} phx-submit="save">
+      <.form for={@form} phx-submit="save" phx-change="validate">
         <.input field={@form[:name]} placeholder="Name" autocomplete="off" />
         <.input
           field={@form[:phone]}
@@ -71,5 +71,16 @@ defmodule LiveViewStudioWeb.VolunteersLive do
       {:error, changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
+  end
+
+  def handle_event("validate", %{"volunteer" => volunteer_params}, socket) do
+    # changeset, to a form, which gets assigned to the socket
+    changeset =
+      %Volunteer{}
+      |> Volunteers.change_volunteer(volunteer_params)
+      # need to explictly set action to validate so that it updates in real time
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, form: to_form(changeset))}
   end
 end
