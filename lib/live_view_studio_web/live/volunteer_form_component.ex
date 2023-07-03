@@ -14,6 +14,9 @@ defmodule LiveViewStudioWeb.VolunteerFormComponent do
   def render(assigns) do
     ~H"""
     <div>
+      <div class="count">
+        Got for it! You'll be volunteer #<%= @count + 1 %>
+      </div>
       <.form
         for={@form}
         phx-submit="save"
