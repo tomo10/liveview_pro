@@ -11,11 +11,16 @@ defmodule LiveViewStudioWeb.VolunteerFormComponent do
     {:ok, assign(socket, :form, to_form(cs))}
   end
 
+  def update(assigns, socket) do
+    socket = socket |> assign(assigns) |> assign(:count, assigns.count + 1)
+    {:ok, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <div>
       <div class="count">
-        Got for it! You'll be volunteer #<%= @count + 1 %>
+        Got for it! You'll be volunteer #<%= @count %>
       </div>
       <.form
         for={@form}
