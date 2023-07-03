@@ -49,10 +49,7 @@ defmodule LiveViewStudioWeb.VolunteerFormComponent do
 
   def handle_event("save", %{"volunteer" => volunteer_params}, socket) do
     case Volunteers.create_volunteer(volunteer_params) do
-      {:ok, volunteer} ->
-        # send a message to the parent live view (which runs on same PID hence self())
-        send(self(), {:volunteer_created, volunteer})
-
+      {:ok, _volunteer} ->
         # create a new changeset for the form so its empty
         changeset = Volunteers.change_volunteer(%Volunteer{})
         # convert the changeset to a form and assign it to the socket

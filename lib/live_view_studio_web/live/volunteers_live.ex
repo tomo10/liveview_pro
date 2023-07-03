@@ -5,6 +5,10 @@ defmodule LiveViewStudioWeb.VolunteersLive do
   alias LiveViewStudioWeb.VolunteerFormComponent
 
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      Volunteers.subscribe()
+    end
+
     volunteers = Volunteers.list_volunteers()
 
     socket =
@@ -31,7 +35,6 @@ defmodule LiveViewStudioWeb.VolunteersLive do
           :for={{volunteer_id, volunteer} <- @streams.volunteers}
           volunteer={volunteer}
           id={volunteer_id}
-          id
         />
       </div>
     </div>
@@ -73,10 +76,9 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     volunteer = Volunteers.get_volunteer!(id)
 
     # this could and should be put in a fn in the context module for best practice
-    {:ok, volunteer} =
+    {:ok, _volunteer} =
       Volunteers.update_volunteer(volunteer, %{checked_out: !volunteer.checked_out})
 
-    socket = stream_insert(socket, :volunteers, volunteer)
     {:noreply, socket}
   end
 
@@ -92,5 +94,9 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     socket = update(socket, :count, &(&1 + 1))
 
     {:noreply, stream_insert(socket, :volunteers, volunteer, at: 0)}
+  end
+
+  def handle_info({:volunteer_updated, volunteer}, socket) do
+    {:noreply, stream_insert(socket, :volunteers, volunteer)}
   end
 end
