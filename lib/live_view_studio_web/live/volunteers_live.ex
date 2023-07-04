@@ -75,7 +75,6 @@ defmodule LiveViewStudioWeb.VolunteersLive do
   def handle_event("toggle-status", %{"id" => id}, socket) do
     volunteer = Volunteers.get_volunteer!(id)
 
-    # this could and should be put in a fn in the context module for best practice
     {:ok, _volunteer} =
       Volunteers.update_volunteer(volunteer, %{checked_out: !volunteer.checked_out})
 
@@ -87,7 +86,7 @@ defmodule LiveViewStudioWeb.VolunteersLive do
 
     {:ok, _} = Volunteers.delete_volunteer(volunteer)
 
-    {:noreply, stream_delete(socket, :volunteers, volunteer)}
+    {:noreply, socket}
   end
 
   def handle_info({:volunteer_created, volunteer}, socket) do
@@ -98,5 +97,10 @@ defmodule LiveViewStudioWeb.VolunteersLive do
 
   def handle_info({:volunteer_updated, volunteer}, socket) do
     {:noreply, stream_insert(socket, :volunteers, volunteer)}
+  end
+
+  def handle_info({:volunteer_deleted, volunteer}, socket) do
+    socket = update(socket, :count, &(&1 - 1))
+    {:noreply, stream_delete(socket, :volunteers, volunteer)}
   end
 end
