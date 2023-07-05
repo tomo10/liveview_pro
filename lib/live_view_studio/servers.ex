@@ -2,11 +2,27 @@ defmodule LiveViewStudio.Servers do
   @moduledoc """
   The Servers context.
   """
-
+  @topic inspect(__MODULE__)
   import Ecto.Query, warn: false
   alias LiveViewStudio.Repo
 
   alias LiveViewStudio.Servers.Server
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, @topic)
+  end
+
+  def broadcast({:ok, server}, tag) do
+    Phoenix.PubSub.broadcast(
+      LiveViewStudio.PubSub,
+      @topic,
+      {tag, server}
+    )
+
+    {:ok, server}
+  end
+
+  def broadcast({:error, _changeset} = error, _tag), do: error
 
   @doc """
   Returns the list of servers.
@@ -71,6 +87,7 @@ defmodule LiveViewStudio.Servers do
     server
     |> Server.changeset(attrs)
     |> Repo.update()
+    |> broadcast(:server_updated)
   end
 
   @doc """

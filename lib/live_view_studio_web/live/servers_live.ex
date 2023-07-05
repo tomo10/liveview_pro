@@ -5,6 +5,8 @@ defmodule LiveViewStudioWeb.ServersLive do
   alias LiveViewStudioWeb.ServerFormComponent
 
   def mount(_params, _session, socket) do
+    if connected?(socket), do: Servers.subscribe()
+
     servers = Servers.list_servers()
 
     socket =
@@ -114,18 +116,10 @@ defmodule LiveViewStudioWeb.ServersLive do
 
   def handle_event("toggle-status", %{"id" => id}, socket) do
     server = Servers.get_server!(id)
+
     new_status = Servers.toggle_server_status(server)
 
-    {:ok, server} = Servers.update_server(server, new_status)
-
-    socket = assign(socket, selected_server: server)
-
-    # now need to update the servers to show the change on the list. using Enum.map saves the trip to the server
-
-    servers =
-      Enum.map(socket.assigns.servers, fn s -> if s.id == server.id, do: server, else: s end)
-
-    socket = assign(socket, :servers, servers)
+    {:ok, _server} = Servers.update_server(server, new_status)
 
     {:noreply, socket}
   end
@@ -143,6 +137,28 @@ defmodule LiveViewStudioWeb.ServersLive do
       )
 
     socket = push_patch(socket, to: ~p"/servers/#{server}")
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:server_updated, server}, socket) do
+    # if the updated server is the selected server, assign it so the status button is re-rendered
+    socket =
+      if server.id == socket.assigns.selected_server.id do
+        assign(socket, selected_server: server)
+      else
+        socket
+      end
+
+    # now need to update the servers to show the change on the list. using Enum.map saves the trip to the server
+    # servers =
+    #   Enum.map(
+    #     socket.assigns.servers,
+    #     fn s -> if s.id == server.id, do: server, else: s end
+    #   )
+
+    # socket = assign(socket, servers: servers)
+    socket = assign(socket, servers: Servers.list_servers())
 
     {:noreply, socket}
   end

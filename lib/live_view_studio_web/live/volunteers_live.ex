@@ -29,7 +29,6 @@ defmodule LiveViewStudioWeb.VolunteersLive do
         count={@count}
       />
       <.flash_group flash={@flash} />
-
       <div id="volunteers" phx-update="stream">
         <.volunteer
           :for={{volunteer_id, volunteer} <- @streams.volunteers}
@@ -63,7 +62,7 @@ defmodule LiveViewStudioWeb.VolunteersLive do
           class="delete"
           phx-click="delete"
           phx-value-id={@volunteer.id}
-          data-confirm="Are you SURE?"
+          data-confirm="Are you sure?"
         >
           <.icon name="hero-trash-solid" />
         </.link>
