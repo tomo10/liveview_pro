@@ -1,8 +1,6 @@
 defmodule LiveViewStudioWeb.BingoLive do
   use LiveViewStudioWeb, :live_view
 
-  on_mount {LiveViewStudioWeb.UserAuth, :ensure_authenticated}
-
   def mount(_params, _session, socket) do
     if connected?(socket), do: :timer.send_interval(3000, self(), :tick)
 

@@ -3,7 +3,6 @@ defmodule LiveViewStudioWeb.TopSecretLive do
 
   # this on mount hook accounts for redirects via links from within the app
   # the plugs in router are used when the user naviates to a liveview direct with an HTTP request
-  on_mount {LiveViewStudioWeb.UserAuth, :ensure_authenticated}
 
   def mount(_params, _session, socket) do
     {:ok, socket}
