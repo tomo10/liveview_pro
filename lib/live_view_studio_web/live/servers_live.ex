@@ -39,7 +39,6 @@ defmodule LiveViewStudioWeb.ServersLive do
   def render(assigns) do
     ~H"""
     <h1>Servers</h1>
-
     <div id="servers">
       <div class="sidebar">
         <div class="nav">
@@ -135,8 +134,6 @@ defmodule LiveViewStudioWeb.ServersLive do
         :servers,
         fn servers -> [server | servers] end
       )
-
-    socket = push_patch(socket, to: ~p"/servers/#{server}")
 
     {:noreply, socket}
   end
