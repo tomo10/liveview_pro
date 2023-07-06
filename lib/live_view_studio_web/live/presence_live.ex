@@ -10,51 +10,28 @@ defmodule LiveViewStudioWeb.PresenceLive do
     %{current_user: current_user} = socket.assigns
 
     if connected?(socket) do
-      Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, @topic)
-    end
+      Presence.subscribe(@topic)
 
-    if connected?(socket) do
       {:ok, _} =
-        Presence.track(self(), @topic, current_user.id, %{
-          username: current_user.email |> String.split("@") |> hd(),
+        Presence.track_user(current_user, @topic, %{
           is_playing: false
         })
     end
 
-    # returns map of presences
-    presences = Presence.list(@topic)
+    presences = Presence.list_users(@topic)
 
     socket =
       socket
       |> assign(:is_playing, false)
-      |> assign(:presences, simple_presence_map(presences))
+      |> assign(:presences, Presence.simple_presence_map(presences))
 
     {:ok, socket}
-  end
-
-  def simple_presence_map(presences) do
-    # %{
-    #   "1" => %{
-    #     metas: [
-    #       %{is_playing: false, phx_ref: "F288CvveIinnUgOi", username: "bond"},
-    #       %{is_playing: false, phx_ref: "F288EdBVWfjnUgoE", username: "bond"}
-    #     ]
-    #   }
-    # }
-
-    Enum.into(presences, %{}, fn {user_id, %{metas: [meta | _]}} ->
-      {user_id, meta}
-    end)
-
-    # %{
-    #   "1" => %{is_playing: false, phx_ref: "F288XEvgAz3nUgrk", username: "bond"}
-    # }
   end
 
   def render(assigns) do
     ~H"""
     <pre>
-      <%!-- <%= inspect(@diff, pretty: true) %> --%>
+      <%= inspect(@presences, pretty: true) %>
     </pre>
     <div id="presence">
       <div class="users">
@@ -86,31 +63,14 @@ defmodule LiveViewStudioWeb.PresenceLive do
 
     %{current_user: current_user} = socket.assigns
 
-    %{metas: [meta | _]} = Presence.get_by_key(@topic, current_user.id)
-
-    new_meta = %{meta | is_playing: socket.assigns.is_playing}
-
-    Presence.update(self(), @topic, current_user.id, new_meta)
+    Presence.update_user(current_user, @topic, %{
+      is_playing: socket.assigns.is_playing
+    })
 
     {:noreply, socket}
   end
 
   def handle_info(%{event: "presence_diff", payload: diff}, socket) do
-    socket = socket |> remove_presences(diff.leaves) |> add_presences(diff.joins)
-    {:noreply, socket}
-  end
-
-  defp remove_presences(socket, leaves) do
-    user_ids = Enum.map(leaves, fn {user_id, _} -> user_id end)
-
-    presences = Map.drop(socket.assigns.presences, user_ids)
-
-    assign(socket, :presences, presences)
-  end
-
-  defp add_presences(socket, joins) do
-    presences = Map.merge(socket.assigns.presences, simple_presence_map(joins))
-
-    assign(socket, :presences, presences)
+    {:noreply, Presence.handle_diff(socket, diff)}
   end
 end
