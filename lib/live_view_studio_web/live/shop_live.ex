@@ -21,4 +21,8 @@ defmodule LiveViewStudioWeb.ShopLive do
     cart = Map.update(socket.assigns.cart, product, 1, &(&1 + 1))
     {:noreply, assign(socket, :cart, cart)}
   end
+
+  def toggle_cart() do
+    JS.toggle(to: "#cart") |> JS.toggle(to: "#backdrop")
+  end
 end
