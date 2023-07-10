@@ -30,13 +30,18 @@ defmodule LiveViewStudioWeb.PresenceLive do
 
   def render(assigns) do
     ~H"""
-    <pre>
+    <%!-- <pre>
       <%= inspect(@presences, pretty: true) %>
-    </pre>
+    </pre> --%>
     <div id="presence">
       <div class="users">
-        <h2>Who's Here?</h2>
-        <ul>
+        <h2>
+          Who's Here?
+          <button phx-click={toggle_presences()}>
+            <.icon name="hero-list-bullet-solid" />
+          </button>
+        </h2>
+        <ul id="presences">
           <li :for={{_user_id, meta} <- @presences}>
             <span class="status">
               <%= if meta.is_playing, do: "<>", else: "[x]" %>
@@ -72,5 +77,17 @@ defmodule LiveViewStudioWeb.PresenceLive do
 
   def handle_info(%{event: "presence_diff", payload: diff}, socket) do
     {:noreply, Presence.handle_diff(socket, diff)}
+  end
+
+  def toggle_presences do
+    JS.toggle(to: "#presences")
+    |> JS.remove_class(
+      "bg-slate-400",
+      to: ".hero-list-bullet-solid.bg-slate-400"
+    )
+    |> JS.add_class(
+      "bg-slate-400",
+      to: ".hero-list-bullet-solid:not(.bg-slate-400)"
+    )
   end
 end
