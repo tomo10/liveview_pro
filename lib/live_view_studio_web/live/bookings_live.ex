@@ -89,6 +89,9 @@ defmodule LiveViewStudioWeb.BookingsLive do
   end
 
   def parse_date(date_string) do
-    date_string |> Timex.parse!("{ISO:Extended}") |> Timex.to_date()
+    date_string
+    |> Timex.parse!("{ISO:Extended}")
+    |> Timex.Timezone.convert(:local)
+    |> Timex.to_date()
   end
 end
