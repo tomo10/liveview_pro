@@ -22,11 +22,29 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+import flatpicker from "../vendor/flatpickr"
+
+let Hooks = {}
+
+Hooks.Calendar = {
+      mounted() {
+        this.pickr = flatpicker(this.el, {
+          inline: true,
+          mode: "range",
+          showMonths: 2
+        })
+    },
+      destroyed () {
+      this.pickr.destroy()
+    }
+}
+
 let csrfToken =
   document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
 let liveSocket = new LiveSocket("/live", Socket, {
-  params: { _csrf_token: csrfToken }
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks,
 });
 
 // Show progress bar on live navigation and form submits

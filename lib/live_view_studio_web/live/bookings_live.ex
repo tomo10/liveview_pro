@@ -19,11 +19,7 @@ defmodule LiveViewStudioWeb.BookingsLive do
     ~H"""
     <h1>Bookings</h1>
     <div id="bookings">
-      <div id="booking-calendar">
-        <div class="placeholder">
-          calendar here
-        </div>
-      </div>
+      <div id="booking-calendar" phx-hook="Calendar"></div>
       <div :if={@selected_dates} class="details">
         <div>
           <span class="date">
