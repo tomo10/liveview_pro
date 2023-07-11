@@ -9,7 +9,10 @@
       ) %> MB)
     </div>
 
-    <.live_file_input upload={@uploads.photos} />
+    <div class="drop" phx-drop-target={@uploads.photos.ref}>
+      <.live_file_input upload={@uploads.photos} />
+      or drag and drop here
+    </div>
 
     <.error :for={err <- upload_errors(@uploads.photos)}>
       <%= Phoenix.Naming.humanize(err) %>
