@@ -55,4 +55,13 @@ defmodule LiveViewStudioWeb.DesksLive do
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
   end
+
+  defp error_to_string(:too_large),
+    do: "Gulp! File too large (max 10 MB)."
+
+  defp error_to_string(:too_many_files),
+    do: "Whoa, too many files."
+
+  defp error_to_string(:not_accepted),
+    do: "Sorry, that's not an acceptable file type."
 end
